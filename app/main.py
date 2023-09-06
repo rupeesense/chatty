@@ -10,16 +10,6 @@ from app.database import SessionLocal
 app = FastAPI()
 
 
-# @app.on_event("startup")
-# async def startup():
-#     await database.connect()
-#
-#
-# @app.on_event("shutdown")
-# async def shutdown():
-#     await database.disconnect()
-
-
 @app.get("/")
 def read_root():
     return {"message": "Hi from Chatty App!"}
