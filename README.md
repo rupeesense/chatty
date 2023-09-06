@@ -10,6 +10,14 @@ uvicorn app.main:app --reload
 
 ## Client Guide to the Chat WebSocket Endpoint
 
+### Establishing a Connection
+
+For local development, we can use `websocat`:
+
+```bash
+websocat ws://127.0.0.1:8000/ws/chat -H "X-User-ID: 12345"
+```
+
 ### Initiating a Conversation
 
 After establishing the connection, clients can start a new conversation by sending the following JSON message:
