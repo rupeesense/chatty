@@ -3,7 +3,7 @@ from langchain.agents import create_sql_agent
 from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 from langchain.agents.agent_types import AgentType
 
-db = SQLDatabase.from_uri("mysql://root:@localhost:3306/feature_store")
+db = SQLDatabase.from_uri("mysql://root:@localhost:3306/context_store")
 llm = OpenAI(temperature=0, verbose=True)
 
 agent_executor = create_sql_agent(
