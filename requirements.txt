@@ -1,0 +1,5 @@
+SQLAlchemy~=1.4.49
+uvicorn~=0.23.2
+fastapi~=0.103.1
+langchain~=0.0.279
+pydantic~=2.3.0
