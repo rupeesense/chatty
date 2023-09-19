@@ -1,6 +1,6 @@
 from typing import List
 
-from document.user_savings_document import AccountSavingsDocument
+from context_store.document.account_savings_document import AccountSavingsDocument
 
 
 class UserDocument:
