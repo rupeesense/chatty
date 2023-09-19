@@ -12,12 +12,17 @@ if __name__ == '__main__':
 
     agent_executor = initialize_agent(
         tools=tools,
-        llm=OpenAI(temperature=0, openai_api_key='sk-'),
+        llm=OpenAI(temperature=0, openai_api_key='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'),
         verbose=True,
         agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
     )
 
+    # agent_executor.run(
+    #     "How have my monthly savings varied over the past year? Report all numbers in rupees. Try to explain the numbers "
+    #     "in a helpful manner. Today's date is 19th Sept 2023. My user_id is: user1."
+    # )
+
     agent_executor.run(
-        "How have my monthly savings varied over the past year? Report all numbers in rupees. Try to explain the numbers "
+        "What is my total savings across all bank accounts? Report all numbers in rupees. Try to explain the numbers "
         "in a helpful manner. Today's date is 19th Sept 2023. My user_id is: user1."
     )

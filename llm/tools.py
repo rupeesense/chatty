@@ -13,10 +13,6 @@ class SavingsInput(BaseModel):
     user_id: str = Field(description="user_id for the user whose savings are to be retrieved")
 
 
-def get_user_id():
-    return "user1"
-
-
 class SavingsTool(BaseTool):
     name = "get_savings"
     description = """
