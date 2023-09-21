@@ -3,7 +3,12 @@ from mongoengine import Document, StringField, FloatField, DictField, EmbeddedDo
 
 class SavingsRecord(EmbeddedDocument):
     record_date = StringField(required=True)
-    savings_delta = FloatField(required=True)
+    # calculated by subtracting the balance for the previous month from the balance for the current month
+    savings_delta = FloatField(required=True, default=0.0)
+    # calculated by diving the savings for that month by the income for that user for that month
+    savings_income_ratio = FloatField(required=True, default=0.0)
+    # calculated by diving the savings for that month by the total savings for that user for that month
+    savings_rate = FloatField(required=True, default=0.0)
 
 
 class AccountSavingsDocument(Document):
@@ -13,7 +18,7 @@ class AccountSavingsDocument(Document):
 
     user_id = StringField(required=True)
     account_id = StringField(required=True)
-    total_savings = FloatField(default=0.0)
+    total_savings = FloatField(required=True, default=0.0)
     savings_records = DictField(EmbeddedDocumentField(SavingsRecord))
 
     meta = {'collection': 'user_savings'}  # specify the collection name if it's not the same as the class name
@@ -30,12 +35,15 @@ if __name__ == '__main__':
     store.connect()
 
 
-    def generate_savings_record(months_ago=0):
+    def generate_savings_record(months_ago=0, total_savings_for_user=0.0):
         end_date = date(2023, 9, 19) - timedelta(days=30 * months_ago)
         record_date = end_date.strftime("%Y-%m-%d")
         savings_delta = random.uniform(15000, 45000)
+        savings_income_ratio = savings_delta / random.uniform(50000, 100000)
+        savings_rate = savings_delta / total_savings_for_user
 
-        return record_date, SavingsRecord(record_date=record_date, savings_delta=savings_delta)
+        return record_date, SavingsRecord(record_date=record_date, savings_delta=savings_delta,
+                                          savings_income_ratio=savings_income_ratio, savings_rate=savings_rate)
 
 
     user_ids = ['user1', 'user2', 'user3']
@@ -44,10 +52,10 @@ if __name__ == '__main__':
     for uid in user_ids:
         for acc_id in account_ids:
             savings_records_dict = {}
-            total_savings_for_user = 0
+            total_savings_for_user = 50000
 
             for months_ago in range(9):
-                record_date, record = generate_savings_record(months_ago)
+                record_date, record = generate_savings_record(months_ago, total_savings_for_user)
                 savings_records_dict[record_date] = record
                 total_savings_for_user += record.savings_delta
 

@@ -27,3 +27,29 @@ class SavingsTool(BaseTool):
 
     def _arun(self):
         raise NotImplementedError("get_savings does not support async")
+
+
+class FactualInput(BaseModel):
+    """Inputs for get_factual"""
+
+    fact_key: str = Field(description="fact_key for the fact whose value is to be retrieved, possible values are: "
+                                      "interest_rate, recommended_savings_rate")
+
+
+class FactualTool(BaseTool):
+    name = "get_factual"
+    description = """
+        Useful when you want to get the value of a fact.  
+        """
+    args_schema: Type[BaseModel] = FactualInput
+
+    def _run(self, fact_key: str):
+        if fact_key == "interest_rate":
+            return "7 percent per annum"
+        elif fact_key == "recommended_savings_rate":
+            return "0.2 percent per month"
+        else:
+            raise ValueError(f"fact_key: {fact_key} is not supported")
+
+    def _arun(self):
+        raise NotImplementedError("get_factual does not support async")
