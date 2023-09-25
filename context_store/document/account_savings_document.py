@@ -46,27 +46,49 @@ if __name__ == '__main__':
                                           savings_income_ratio=savings_income_ratio, savings_rate=savings_rate)
 
 
-    user_ids = ['user1', 'user2', 'user3']
+    def generate_savings_record_2(months_ago=0, total_savings_for_user=0.0):
+        end_date = date(2023, 9, 19) - timedelta(days=30 * months_ago)
+        record_date = end_date.strftime("%Y-%m-%d")
+        savings_delta = random.uniform(15000, 45000)
+        savings_income_ratio = savings_delta / random.uniform(50000, 100000)
+        savings_rate = savings_delta / total_savings_for_user
+
+        record_date_text = "Savings delta for " + record_date + " is " + str(savings_delta) + " rupees. "
+        savings_income_ratio_text = "Savings income ratio for " + record_date + " is " + str(
+            savings_income_ratio) + " rupees. "
+        savings_rate_text = "Savings rate for " + record_date + " is " + str(savings_rate) + " rupees."
+
+        return savings_delta, record_date_text + "\n " + savings_income_ratio_text + "\n " + savings_rate_text + "\n"
+
+
+    user_ids = ['user1']
     account_ids = ['accountA', 'accountB', 'accountC']
 
     for uid in user_ids:
         for acc_id in account_ids:
             savings_records_dict = {}
-            total_savings_for_user = 50000
-
+            initial_balance = 30000
+            savings_records = ""
+            total_savings_for_user = initial_balance
+            doc = ""
             for months_ago in range(9):
-                record_date, record = generate_savings_record(months_ago, total_savings_for_user)
-                savings_records_dict[record_date] = record
-                total_savings_for_user += record.savings_delta
+                savings, record_text = generate_savings_record_2(months_ago, total_savings_for_user)
+                savings_records += record_text
+                total_savings_for_user += savings
 
-            doc = AccountSavingsDocument(
-                user_id=uid,
-                account_id=acc_id,
-                total_savings=total_savings_for_user,
-                savings_records=savings_records_dict
-            )
+            # doc = AccountSavingsDocument(
+            #     user_id=uid,
+            #     account_id=acc_id,
+            #     total_savings=total_savings_for_user,
+            #     savings_records=savings_records_dict
+            # )
+
+            doc += "For account: " + acc_id + " total savings are " + str(total_savings_for_user) + " rupees. \n"
+            doc += "For account: " + acc_id + " initial balance was " + str(initial_balance) + " rupees. \n"
+            doc += "For account: " + acc_id + " savings records for each monther after the initial date was are: \n" + savings_records + "\n"
+
             print(doc)
-            doc.save()
+            # doc.save()
 
     # Disconnect from the database (optional, usually at the end of your application or script)
     store.disconnect()

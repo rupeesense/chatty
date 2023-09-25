@@ -32,14 +32,15 @@ class SavingsTool(BaseTool):
 class FactualInput(BaseModel):
     """Inputs for get_factual"""
 
-    fact_key: str = Field(description="fact_key for the fact whose value is to be retrieved, possible values are: "
-                                      "interest_rate, recommended_savings_rate")
+    fact_key: str = Field(
+        description="fact_key for the fact whose value is to be retrieved, possible values can be one of: "
+                    "interest_rate, recommended_savings_rate")
 
 
 class FactualTool(BaseTool):
     name = "get_factual"
     description = """
-        Useful when you want to get the value of a fact.  
+        Useful when you want to get the value of a fact, keys can be one of: recommended_savings_rate, interest_rate
         """
     args_schema: Type[BaseModel] = FactualInput
 
