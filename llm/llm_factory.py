@@ -19,7 +19,14 @@ class LLMFactory:
             inference_server_url=inference_server_url_local,
             temperature=0.1,
         )
+        self.chatLLM = HuggingFaceTextGenInference(
+            inference_server_url=inference_server_url_local,
+            temperature=0.5,
+        )
         self._initialized = True
 
     def get_fql_llm(self):
         return self.fqlLLM
+
+    def get_chat_llm(self):
+        return self.chatLLM

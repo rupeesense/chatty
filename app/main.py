@@ -3,10 +3,12 @@ from fastapi import FastAPI, WebSocketDisconnect, Header, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.crud import create_message, get_conversation_by_id, create_conversation
+from app.crud import create_message, get_conversation_by_id, create_conversation, get_messages_by_conversation_id
 from app.database import SessionLocal
+from llm.chat_bot import Chatty
 
 app = FastAPI()
+chatty = Chatty()
 
 
 @app.get("/")
@@ -35,6 +37,27 @@ class ChatRequest(BaseModel):
     conversation_id: str = None
 
 
+class ConversationResponse(BaseModel):
+    conversationId: str
+    userId: str
+    messages: list
+
+
+@app.get("/chat/conversation/{conversation_id}")
+async def get_conversation(conversation_id: str, db: Session = Depends(get_db)):
+    conversation = get_conversation_by_id(db, conversation_id)
+    if not conversation:
+        raise HTTPException(status_code=404, detail=f"No conversation found with ID: {conversation_id}")
+
+    messages = get_messages_by_conversation_id(db, conversation_id)
+
+    return ConversationResponse(
+        conversationId=conversation.id,  # Assuming conversation object has an 'id' attribute
+        userId=conversation.user_id,  # Assuming conversation object has a 'user_id' attribute
+        messages=messages  # This would be a list of message objects or dictionaries
+    )
+
+
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
     if not request.user_message:
@@ -58,10 +81,17 @@ async def chat_endpoint(request: ChatRequest, user_id: str = Depends(get_current
                    user_id=user_id
                    )
 
-    # TODO: Send message to bot and get response
+    response = chatty.respond(message=request.user_message, chat_history=None)
+
+    create_message(db=db,
+                   conversation_id=conversation_id,
+                   sender='system',
+                   content=response,
+                   user_id=user_id
+                   )
 
     # For simplicity, echoing back the message with conversation status
-    return {"message": f"{message}. Message received: {request.user_message}", "conversationId": conversation_id}
+    return {"response": response, "conversationId": conversation_id}
 
 
 if __name__ == "__main__":

@@ -23,3 +23,7 @@ def create_message(db: Session, conversation_id: uuid.UUID, sender: str, content
 
 def get_conversation_by_id(db: Session, conversation_id: str):
     return db.query(Conversation).filter(Conversation.id == uuid.UUID(conversation_id)).first()
+
+
+def get_messages_by_conversation_id(db: Session, conversation_id: str):
+    return db.query(Message).filter(Message.conversation_id == uuid.UUID(conversation_id))
