@@ -2,8 +2,8 @@ from langchain import OpenAI
 from langchain.agents import initialize_agent
 from langchain.agents.agent_types import AgentType
 
-from context_store.context_store import ContextStore
-from llm.tools import SavingsTool, FactualTool
+from context_store.store import ContextStore
+from llm.agents.tools import SavingsTool, FactualTool
 
 if __name__ == '__main__':
     ContextStore().connect()
@@ -18,13 +18,12 @@ if __name__ == '__main__':
         agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
     )
 
-    SYS_PROMPT = '''
-    
+    SYS_PROMPT = ''' 
     You are the best personal finance assistant. You will have context of user financial data.
     When answering questions, you should try explain the numbers in a very intuitive manner.
     You are given a set of tools to help you answer the query, but only use them if necessary.
     Report all numbers in rupees.
-    Today's date is 19th Sept 2023. My user_id is: user1. 
+    Today's date is 19th Sept 2023.
     
     '''
 
