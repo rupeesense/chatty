@@ -67,12 +67,6 @@ Question: {input}'''
     def run(self, fql: str, user_id: str):
         query = fql + " for user: " + user_id
         print(query)
-        sql_query = self.llm.predict(self.fql_engine_template.format(query))
-        print(sql_query)
-
-    def run_sql_chain(self, fql: str, user_id: str):
-        query = fql + " for user: " + user_id
-        print(query)
         result = self._chain.run(query=query, table_names_to_use=self._tables_names)
         print(result)
         return result
@@ -81,4 +75,4 @@ Question: {input}'''
 if __name__ == '__main__':
     fql_engine = FQLEngine()
     for example in examples:
-        fql_engine.run_sql_chain(example, 'xyz')
+        fql_engine.run(example, 'xyz')

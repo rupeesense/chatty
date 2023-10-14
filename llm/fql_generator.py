@@ -14,7 +14,7 @@ Include reason on why you need the information to answer the question.
 Example:
 Input: What is the savings rate for August?
 Reason: To answer the question, I need to know the savings rate for August.
-Output savings rate for august
+Output: savings rate for august
 
 Input: What is my total savings across all bank accounts?
 Reason: To answer the question, I need to know the total savings across all bank accounts.

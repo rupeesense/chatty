@@ -11,13 +11,16 @@ class Chatty:
 
     def __init__(self):
         self.llm = LLMFactory().get_chat_llm()
-        template = "You are a helpful assistant that translates that answers user queries respectfully."
-        system_message_prompt = SystemMessagePromptTemplate.from_template(template)
-        human_template = "{text}"
+        sys_prompt = "You are a helpful assistant that translates that answers user queries respectfully." \
+                     " Try to explain the numbers in a helpful manner."
+        system_message_prompt = SystemMessagePromptTemplate.from_template(sys_prompt)
+        human_message_prompt = HumanMessagePromptTemplate.from_template("{text}")
         ai_message_prompt = AIMessagePromptTemplate.from_template("")
-        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-        chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt, ai_message_prompt])
+        context_prompt = ChatPromptTemplate.from_template(
+            "You can use the following information to answer human query: {context}")
+        chat_prompt = ChatPromptTemplate.from_messages(
+            [system_message_prompt, human_message_prompt, context_prompt, ai_message_prompt])
         self.llm_chain = LLMChain(prompt=chat_prompt, llm=self.llm, verbose=True)
 
-    def respond(self, message: str, chat_history: List[str] = None) -> str:
-        return self.llm_chain.run(text=message)
+    def respond(self, message: str, context: str, chat_history: List[str] = None) -> str:
+        return self.llm_chain.run(text=message, context=context)
