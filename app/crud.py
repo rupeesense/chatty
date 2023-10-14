@@ -21,5 +21,5 @@ def create_message(db: Session, conversation_id: uuid.UUID, sender: str, content
     return message.id
 
 
-def get_conversation_by_id(db: Session, conversation_id: uuid.UUID):
-    return db.query(Conversation).filter(Conversation.id == conversation_id).first()
+def get_conversation_by_id(db: Session, conversation_id: str):
+    return db.query(Conversation).filter(Conversation.id == uuid.UUID(conversation_id)).first()
