@@ -27,7 +27,7 @@ class AccountSavingsDocument(Document):
 if __name__ == '__main__':
     # Instantiate the manager
     # Connect to the database
-    from context_store.context_store import ContextStore
+    from context_store.store import ContextStore
     import random
     from datetime import date, timedelta
 

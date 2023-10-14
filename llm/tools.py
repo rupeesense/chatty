@@ -3,8 +3,8 @@ from typing import Type
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from context_store.context_store import get_savings_documents_by_user_id
 from context_store.document.account_savings_document import AccountSavingsDocument
+from context_store.store import get_savings_documents_by_user_id
 
 
 class SavingsInput(BaseModel):
