@@ -1,7 +1,5 @@
-# fql stands for flexible query language
-#
+from langchain.chains import create_sql_query_chain
 from langchain.prompts import PromptTemplate
-from langchain_experimental.sql import SQLDatabaseChain
 
 from context_store.custom_sql_database import CustomSQLDatabase
 from llm.llm_factory import LLMFactory
@@ -13,6 +11,7 @@ examples = [
 ]
 
 
+# fql stands for flexible query language
 class FQLEngine:
     fql_engine_template = '''You are a MySQL expert. Given an input question, first create a syntactically correct MySQL query to run, then look at the results of the query and return the answer to the input question.You can order the results to return the most informative data in the database.
 Never query for all columns from a table. You must query only the columns that are needed to answer the question. Wrap each column name in backticks (`) to denote them as delimited identifiers.
@@ -49,25 +48,22 @@ Question: {input}'''
 
     def __init__(self):
         self._tables_names = ["user_account_monthly_records"]
-        self.llm = LLMFactory().get_fql_llm()
+        self._llm = LLMFactory().get_fql_llm()
         self.db = CustomSQLDatabase.from_uri('mysql+pymysql://root:@localhost:3306/feature_store',
                                              include_tables=self._tables_names,
                                              sample_rows_in_table_info=3)
-        self._chain = SQLDatabaseChain.from_llm(self.llm,
-                                                self.db,
-                                                prompt=self.CUSTOM_TEMPLATE,
-                                                top_k=20,
-                                                return_direct=True,
-                                                return_intermediate_steps=False,
-                                                use_query_checker=False,
-                                                verbose=True)
+        self._chain = create_sql_query_chain(self._llm,
+                                             self.db,
+                                             prompt=self.CUSTOM_TEMPLATE)
 
     # this function takes in a fql and returns a response
     # fql is represented in english language and contains the argument along with time range
     def run(self, fql: str, user_id: str):
         query = fql + " for user: " + user_id
         print(query)
-        result = self._chain.run(query=query, table_names_to_use=self._tables_names)
+        sql_query = self._chain.invoke({"question": query,
+                                        "table_names_to_use": self._tables_names})
+        result = self.db.run(sql_query)
         print(result)
         return result
 
