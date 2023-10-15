@@ -28,7 +28,7 @@ Reason: To answer the question, I need to know the highest and lowest savings mo
 Output: highest and lowest savings month so far this year
 
 Now you have to give reason and output for the following input:
-    Input: {user_query}'''
+Input: {user_query}'''
 
     def __init__(self):
         self.fql_engine = FQLEngine()
