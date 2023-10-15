@@ -17,7 +17,7 @@ class LLMFactory:
         inference_server_url_local = "http://127.0.0.1:8080"
         self.fqlLLM = HuggingFaceTextGenInference(
             inference_server_url=inference_server_url_local,
-            temperature=0.01,
+            temperature=0.06,
             timeout=300,  # 5 minutes
         )
         self.chatLLM = HuggingFaceTextGenInference(
