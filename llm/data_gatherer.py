@@ -2,6 +2,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
 from context_store.fql import FQLEngine
+from context_store.llm_logger import llm_logger
 from llm.llm_factory import LLMFactory
 
 
@@ -47,4 +48,6 @@ Now you have to give reason and output for the following input:
         # TODO: Get only output key from this
         fql_gen = self.fql_gen_chain.run(user_query=user_query)
         fql_result = self.fql_engine.run(fql_gen, user_id)
+        llm_logger.log(use_case='question_to_fql', prompt=user_query, response=fql_gen,
+                       llm_params=self._llm._default_params)
         return fql_result

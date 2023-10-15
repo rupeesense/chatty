@@ -2,7 +2,7 @@ from langchain.chains import create_sql_query_chain
 from langchain.prompts import PromptTemplate
 
 from context_store.custom_sql_database import CustomSQLDatabase
-from context_store.llm_logger import LLMLogger
+from context_store.llm_logger import llm_logger
 from llm.llm_factory import LLMFactory
 
 examples = [
@@ -50,7 +50,6 @@ Question: {input}'''
     def __init__(self):
         self._tables_names = ["user_account_monthly_records"]
         self._llm = LLMFactory().get_fql_llm()
-        self.llm_logger = LLMLogger()
         self.db = CustomSQLDatabase.from_uri('mysql+pymysql://root:@localhost:3306/feature_store',
                                              include_tables=self._tables_names,
                                              sample_rows_in_table_info=3)
@@ -66,7 +65,7 @@ Question: {input}'''
         sql_query = self._chain.invoke({"question": query,
                                         "table_names_to_use": self._tables_names})
         result = self.db.run(sql_query)
-        self.llm_logger.log(use_case='fql_to_sql', prompt=fql, response=sql_query)
+        llm_logger.log(use_case='fql_to_sql', prompt=fql, response=sql_query, llm_params=self._llm._default_params)
         print(result)
         return result
 
