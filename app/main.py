@@ -84,6 +84,7 @@ async def chat_endpoint(request: ChatRequest, user_id: str = Depends(get_current
                    )
 
     relevant_data = data_gatherer.gather(user_query=request.user_message, user_id=user_id)
+    # TODO: better way to send relevant data to next LLM
     response = chatty.respond(message=request.user_message, context=relevant_data, chat_history=None)
 
     create_message(db=db,

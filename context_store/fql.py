@@ -60,6 +60,8 @@ Question: {input}'''
     # this function takes in a fql and returns a response
     # fql is represented in english language and contains the argument along with time range
     def run(self, fql: str, user_id: str):
+        # Todo: better way to add user_id
+        
         query = fql + " for user: " + user_id
         print(query)
         sql_query = self._chain.invoke({"question": query,
