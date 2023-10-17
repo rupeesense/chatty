@@ -45,8 +45,9 @@ Input: {user_query}'''
     # this method generates fql for user financial data and calls FQLEngine to get the result
     # other types of sources(?) are not implemented yet.
     def gather(self, user_query: str, user_id: str):
-        # TODO: Get only output key from this
         fql_gen = self.fql_gen_chain.run(user_query=user_query)
+        if 'Output:' in fql_gen:
+            fql_gen = fql_gen.split('Output:')[1].strip()
         fql_result = self.fql_engine.run(fql_gen, user_id)
         llm_logger.log(use_case='question_to_fql', prompt=user_query, response=fql_gen,
                        llm_params=self._llm._default_params)
