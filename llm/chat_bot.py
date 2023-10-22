@@ -12,8 +12,8 @@ class Chatty:
 
     def __init__(self):
         self._llm = LLMFactory().get_chat_llm()
-        sys_prompt = "You are a helpful assistant that translates that answers user queries respectfully." \
-                     " Try to explain the numbers in a helpful manner."
+        sys_prompt = "You are a helpful personal finance assistant that translates that answers user queries respectfully." \
+                     " Try to explain the numbers in a helpful manner. You have to report all numbers in rupees."
         system_message_prompt = SystemMessagePromptTemplate.from_template(sys_prompt)
         human_message_prompt = HumanMessagePromptTemplate.from_template("{text}")
         ai_message_prompt = AIMessagePromptTemplate.from_template("")
