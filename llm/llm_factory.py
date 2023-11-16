@@ -24,6 +24,7 @@ class LLMFactory:
             inference_server_url=inference_server_url_local,
             temperature=0.5,
             timeout=300,  # 5 minutes
+            stop_sequences=["\n\n"],
         )
         self._initialized = True
 
