@@ -6,27 +6,8 @@ from context_store.llm_logger import llm_logger
 from llm.llm_factory import LLMFactory
 
 
-class DataGatherer:
-    fql_gen_prompt = '''Given a user query, you have to identify what information is needed to answer the query.
-Include reason on why you need the information to answer the question. If the question does not require any information, return "None" as output.
-
-Example:
-Input: What is the savings rate for August?
-Reason: To answer the question, I need to know the savings rate for August.
-Output: savings rate for august
-
-Input: What is my total savings across all bank accounts?
-Reason: To answer the question, I need to know the total savings across all bank accounts.
-Output: total savings across all bank accounts
-
-Input: How much interest have I earned on my savings over the past year for accountA?
-Reason: To answer the question, I need to know the interest earned on savings over the past year for accountA.
-Output: interest earned on savings over the past year for accountA
-
-Input: What is my highest and lowest savings month so far this year?
-Reason: To answer the question, I need to know the highest and lowest savings month so far this year.
-Output: highest and lowest savings month so far this year
-
+class KnowledgeBaseLLM:
+    fql_gen_prompt = '''You are a house loan expert for the india market. 
 Now you have to give reason and output for the following input:
 Input: {user_query}'''
 

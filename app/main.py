@@ -7,6 +7,7 @@ from app.crud import create_message, get_conversation_by_id, create_conversation
 from app.database import SessionLocal
 from llm.chat_bot import Chatty
 from llm.data_gatherer import DataGatherer
+from llm.memory_manager import ChatHistory
 
 app = FastAPI()
 chatty = Chatty()
@@ -45,6 +46,9 @@ class ConversationResponse(BaseModel):
     messages: list
 
 
+chat_history = ChatHistory()
+
+
 @app.get("/chat/conversation/{conversation_id}")
 async def get_conversation(conversation_id: str, db: Session = Depends(get_db)):
     conversation = get_conversation_by_id(db, conversation_id)
@@ -65,17 +69,19 @@ async def chat_endpoint(request: ChatRequest, user_id: str = Depends(get_current
     if not request.user_message:
         raise HTTPException(status_code=400, detail="Content is required for the message.")
 
-    if not request.conversation_id:
-        # Start a new conversation
-        conversation_id = create_conversation(db=db, user_id=user_id)
-        message = f"New conversation started with ID: {conversation_id}"
-    else:
-        # Check if conversation exists, if not raise an error, else continue
-        if not get_conversation_by_id(db=db, conversation_id=request.conversation_id):
-            raise HTTPException(status_code=404, detail=f"No conversation found with ID: {request.conversation_id}")
-        conversation_id = request.conversation_id
-        message = f"Resumed conversation with ID: {conversation_id}"
+    # if not request.conversation_id:
+    #     # Start a new conversation
+    #     conversation_id = create_conversation(db=db, user_id=user_id)
+    # else:
+    #     # Check if conversation exists, if not raise an error, else continue
+    #     if not get_conversation_by_id(db=db, conversation_id=request.conversation_id):
+    #         raise HTTPException(status_code=404, detail=f"No conversation found with ID: {request.conversation_id}")
+    #     conversation_id = request.conversation_id
 
+    if not get_conversation_by_id(db=db, conversation_id=request.conversation_id):
+        conversation_id = create_conversation(db=db, id=request.conversation_id, user_id=user_id)
+    else:
+        conversation_id = request.conversation_id
     create_message(db=db,
                    conversation_id=conversation_id,
                    sender='user',
@@ -85,8 +91,9 @@ async def chat_endpoint(request: ChatRequest, user_id: str = Depends(get_current
 
     relevant_data = data_gatherer.gather(user_query=request.user_message, user_id=user_id)
     # TODO: better way to send relevant data to next LLM
-    response = chatty.respond(message=request.user_message, context=relevant_data, chat_history=None)
-
+    user_chat_history = chat_history.get_chat_history(user_id=user_id)
+    response = chatty.respond(message=request.user_message, context=relevant_data, chat_history=user_chat_history)
+    chat_history.update_chat_history(user_id=user_id, user_message=request.user_message, bot_message=response)
     create_message(db=db,
                    conversation_id=conversation_id,
                    sender='system',

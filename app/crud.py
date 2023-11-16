@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 from app.models import Conversation, Message
 
 
-def create_conversation(db: Session, user_id: str):
-    conversation = Conversation(user_id=user_id)
+def create_conversation(db: Session, id: str, user_id: str):
+    conversation = Conversation(id=uuid.UUID(id), user_id=user_id)
     db.add(conversation)
     db.commit()
     db.refresh(conversation)
